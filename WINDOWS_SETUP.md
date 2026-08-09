@@ -91,37 +91,67 @@ Most Windows 10/11 machines already have it. If the app window fails to open:
 
 https://developer.microsoft.com/en-us/microsoft-edge/webview2/
 
-### 1.5 PHP (needed after license activation)
+### 1.5 PHP (required to run FoodPOS after activate)
 
-The shell starts Laravel with `php artisan serve`. Install PHP 8.2+ and ensure `php` is on PATH:
+The installed app starts Laravel with `php artisan serve`. **PHP must be on PATH** on any PC that runs the app (bundled PHP is still TODO).
+
+Install PHP 8.2+ (e.g. https://windows.php.net/download/ or Chocolatey `choco install php`), then:
 
 ```powershell
 php --version
 ```
 
-Until PHP + `foodpos-backend` are bundled in the installer, you need PHP installed for a full POS test.
+Also enable extensions commonly needed by Laravel in `php.ini` (`openssl`, `pdo_sqlite`, `mbstring`, `tokenizer`, `fileinfo`, `curl`).
+
+### 1.6 Composer (build machine only)
+
+Needed once to prepare `foodpos-backend` before building the installer:
+
+https://getcomposer.org/download/
+
+```powershell
+composer --version
+```
 
 ---
 
 ## 2. Get the project on Windows
 
-Copy or clone the project folder onto the Windows machine, e.g.:
+Copy the **full** project onto the Windows machine (including `foodpos-backend`).  
+If you copy from git without `vendor/`, prepare it in the next section.
+
+Example path:
 
 ```
 C:\dev\tauri-test
 ```
 
-Open PowerShell in that folder.
-
 ---
 
-## 3. Install JS deps and build
+## 3. Prepare Laravel, then build
+
+The installer now **bundles** `foodpos-backend`. Build will fail if vendor / frontend assets are missing.
 
 ```powershell
 cd C:\dev\tauri-test
+
+# One-time (or after backend changes)
+cd foodpos-backend
+copy .env.example .env   # if you have no .env yet
+php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"
+composer install --no-dev
+php artisan key:generate
+php artisan migrate --seed
+npm install
+npm run build
+cd ..
+
+# Build desktop installer (also runs prepare-backend-bundle)
 npm install
 npm run tauri build
 ```
+
+If prepare fails with “vendor missing”, you skipped the `foodpos-backend` steps above.
 
 ### Dev mode (optional)
 
@@ -182,13 +212,25 @@ Do not rely on a global `tauri` binary.
 
 Install **Desktop development with C++** via Visual Studio Build Tools, then reboot and retry.
 
-### App starts but FoodPOS does not load
+### `foodpos-backend not found (expected artisan…)`
 
-After license activation the app looks for `foodpos-backend` and runs `php`. For now:
+The **old installer** did not include Laravel. Fix:
 
-1. Keep `foodpos-backend` next to the project / app as in the repo.
-2. Ensure `php` is on PATH.
-3. Backend should already be migrated/seeded (`admin@local` / `admin123`).
+1. Pull/copy the latest project (with bundling changes).
+2. Prepare backend (`composer install`, `migrate --seed`, `npm run build` in `foodpos-backend`).
+3. Rebuild: `npm run tauri build`
+4. Uninstall the old app, install the new NSIS/MSI.
+5. Activate license again if needed.
+
+On first launch the app copies the bundled backend into:
+
+`%APPDATA%\com.usman.foodpos-offline\foodpos-backend`
+
+### App activates but PHP errors / blank FoodPOS
+
+Install PHP 8.2+ and ensure `php` works in a new PowerShell, then relaunch the app.
+
+Login after backend starts: `admin@local` / `admin123`
 
 ---
 
@@ -225,5 +267,5 @@ Details: [`LICENSING.md`](LICENSING.md)
 
 ## Note
 
-Bundling portable PHP + `foodpos-backend` inside the Windows installer is still TODO.  
-This guide gets you a Windows **shell build** and local testing with PHP installed separately.
+- `foodpos-backend` is bundled in the installer (after a successful prepare step).
+- **Portable PHP inside the installer is still TODO** — target PCs need PHP on PATH for now.

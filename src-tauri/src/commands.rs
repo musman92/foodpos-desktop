@@ -84,7 +84,7 @@ pub fn launch_foodpos(app: AppHandle, state: State<'_, AppState>) -> Result<Back
         .lock()
         .map_err(|_| "backend lock poisoned".to_string())?;
 
-    let info = backend::ensure_running(&mut backend).map_err(String::from)?;
+    let info = backend::ensure_running(&app, &mut backend).map_err(String::from)?;
 
     let url = info.url.parse().map_err(|e| format!("bad backend url: {e}"))?;
     if let Some(window) = app.get_webview_window("main") {

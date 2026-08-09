@@ -16,6 +16,7 @@ src-tauri/target
 keys/issuance_log.json
 keys/license_keys.json
 src-tauri/resources/license_keys.json
+src-tauri/resources/foodpos-backend
 
 # FoodPOS Laravel copy
 foodpos-backend/vendor
