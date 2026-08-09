@@ -35,15 +35,55 @@ If those fail, add this to your user PATH and open a new terminal:
 %USERPROFILE%\.cargo\bin
 ```
 
-### 1.3 Node.js
+### 1.3 Node.js (need 20+)
 
-1. Install **Node.js LTS** (20+): https://nodejs.org
-2. Verify:
+Tauri 2 / Vite 7 need **Node 20 or 22**. Node 16 is too old.
+
+#### Option A — Installer (simplest)
+
+1. Uninstall old Node 16 from **Settings → Apps** (if present).
+2. Install **Node.js 22 LTS**: https://nodejs.org
+3. Open a **new** PowerShell:
 
 ```powershell
-node --version
-npm --version
+node -v
+# expect v22.x.x
 ```
+
+#### Option B — nvm-windows
+
+Use [nvm-windows](https://github.com/coreybutler/nvm-windows) (not the Mac/Linux `nvm`).
+
+```powershell
+nvm version
+nvm list
+nvm install 22
+nvm use 22
+node -v
+```
+
+If `nvm use 22` still leaves you on `v16.14.0`:
+
+1. **Install 22 first** — `nvm use` does nothing if that version is not installed.
+2. Run PowerShell / CMD **as Administrator** (nvm-windows often needs this to switch).
+3. Check which `node` wins on PATH:
+
+```powershell
+where.exe node
+```
+
+- If you see `C:\Program Files\nodejs\...` **above** the nvm path, uninstall the standalone Node 16 from Apps, or remove that folder from PATH.
+- nvm’s active path should look like `...\nvm\...\nodejs\node.exe` (symlink folder).
+
+4. Close **all** terminals and open a new one, then:
+
+```powershell
+nvm use 22
+node -v
+where.exe node
+```
+
+5. Avoid mixing Git Bash “nvm” with nvm-windows — use **PowerShell or CMD** for builds.
 
 ### 1.4 WebView2 Runtime
 
