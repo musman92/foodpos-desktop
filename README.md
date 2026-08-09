@@ -70,3 +70,7 @@ rm -rf ~/Library/Application\ Support/com.usman.foodpos-offline
 - [ ] Direct local printing
 - [ ] Counter mode (multi-floor LAN)
 - [ ] One-way sync to cloud later
+
+
+
+npm run tauri icon ./app-icon.png
