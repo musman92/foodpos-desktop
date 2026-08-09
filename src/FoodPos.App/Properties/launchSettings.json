@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FoodPos.App": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

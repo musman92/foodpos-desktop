@@ -1,76 +1,44 @@
-# FoodPOS Offline (Tauri)
+# FoodPOS Offline (WinUI)
 
-Windows desktop shell for offline FoodPOS. Cloud SaaS at `/Users/usman/Sites/foodpos` is **not** modified.
+Windows offline POS — **WinUI 3 + C# + .NET 8**.  
+Cloud SaaS (Laravel) is a separate product and is not part of this repo.
 
-## Layout
+## Docs
+
+| Doc | Purpose |
+|-----|---------|
+| [`REQUIREMENTS.md`](REQUIREMENTS.md) | Product analysis, phases, modules / licensing model |
+| [`SETUP.md`](SETUP.md) | Visual Studio install + run on Windows |
+
+## Solution layout
 
 ```
-crates/licensing/       Machine-ID → signed license tokens
-tools/license-gen/      Vendor CLI (issue / list)
-src-tauri/ + src/       Tauri license gate + local auth PoC UI
-foodpos-backend/        Laravel FoodPOS copy (offline edition)
+FoodPos.sln
+src/
+  FoodPos.App/             WinUI UI (login, settings)
+  FoodPos.Core/            Domain, session, interfaces
+  FoodPos.Infrastructure/  EF Core + SQL Server Express
 ```
 
-## Run (dev)
+## MVP (current)
 
-Terminal 1 — optional (Tauri will also auto-start PHP):
+- Admin login: `admin` / `admin123`
+- Shop settings (name, currency, receipt footer)
+- DB: **SQL Server Express** → `FoodPosOffline` (see [`SETUP.md`](SETUP.md))
 
-```bash
-cd foodpos-backend && php artisan serve
+## Run (Windows only)
+
+```powershell
+dotnet restore FoodPos.sln
+dotnet run --project src\FoodPos.App\FoodPos.App.csproj -p:Platform=x64
 ```
 
-Terminal 2:
+Or open `FoodPos.sln` in Visual Studio 2022 → F5.  
+Full steps: [`SETUP.md`](SETUP.md).
 
-```bash
-npm run tauri dev
-```
+## Roadmap (short)
 
-Flow: activate license (or reuse existing) → Tauri starts Laravel on `http://127.0.0.1:8000` → window opens FoodPOS login (`admin@local` / `admin123`).
-
-## Licensing (vendor)
-
-```bash
-npm run tauri dev
-# copy Machine ID from activation screen
-
-cargo run -p license-gen -- issue \
-  --machine-id '<paste>' \
-  --seats 2 \
-  --customer 'Hill Station Cafe'
-```
-
-Paste the `FPOS1.…` token into the app. History: `keys/issuance_log.json` (your machine only).
-
-## FoodPOS backend (offline copy)
-
-```bash
-cd foodpos-backend
-cp .env.example .env
-php artisan key:generate
-touch database/database.sqlite
-composer install && npm install && npm run build
-php artisan migrate --seed
-php artisan serve
-```
-
-Login: `admin@local` / `admin123`  
-Details: [`foodpos-backend/README.md`](foodpos-backend/README.md)
-
-## Reset Tauri app data (macOS)
-
-```bash
-rm -rf ~/Library/Application\ Support/com.usman.foodpos-offline
-```
-
-## Roadmap
-
-- [x] Machine-bound licensing (no JSON key pool)
-- [x] Copy FoodPOS + strip SaaS / branches UI
-- [x] Tauri launches Laravel after license activation
-- [ ] Direct local printing
-- [ ] Counter mode (multi-floor LAN)
-- [ ] One-way sync to cloud later
-
-
-
-npm run tauri icon ./app-icon.png
+1. License + modules (machine-bound)
+2. Single-counter POS
+3. Multi-counter (same Express DB over LAN)
+4. Offline → cloud sync

@@ -1,43 +1,22 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-/target
-src-tauri/target
-keys/issuance_log.json
-keys/license_keys.json
-src-tauri/resources/license_keys.json
-src-tauri/resources/foodpos-backend
-
-# FoodPOS Laravel copy
-foodpos-backend/vendor
-foodpos-backend/node_modules
-foodpos-backend/.env
-foodpos-backend/database/*.sqlite
-foodpos-backend/storage/logs/*
-foodpos-backend/storage/framework/cache/*
-foodpos-backend/storage/framework/sessions/*
-foodpos-backend/storage/framework/views/*
-foodpos-backend/public/build
-foodpos-backend/.phpunit.result.cache
-
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# Build
+bin/
+obj/
+.vs/
+*.user
 *.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+AppPackages/
+BundleArtifacts/
+**/Package.StoreAssociation.xml
+*.appx
+*.msix
+*.msixbundle
+
+# OS / editor
+.DS_Store
+.idea/
+
+# Local data / secrets (never commit)
+*.db
+*.db-shm
+*.db-wal
+connection.txt
